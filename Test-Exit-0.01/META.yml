@@ -1,0 +1,13 @@
+---
+abstract: 'Test whether code exits without terminating testing.'
+author:
+  - 'Andrew Rodland <andrew@hbslabs.com>'
+generated_by: 'Dist::Zilla::Plugin::MetaYAML version 1.091940'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Test-Exit
+requires:
+  Test::Builder: 0.86
+version: 0.01
