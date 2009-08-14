@@ -113,4 +113,8 @@ sub never_exits_ok (&;$) {
   __PACKAGE__->builder->ok(!defined _try_run($code), $description);
 }
 
+=back
+
+=cut
+
 1;
