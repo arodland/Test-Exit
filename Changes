@@ -1,5 +1,9 @@
 Changes for Test::Exit
 
+0.03 2009-12-04
+  * Handle "exit;" properly -- it should behave like exit(0).
+    Thanks to KATO Kazuyoshi (kzys).
+
 0.02 2009-08-14
   * Fix a POD error.
 
