@@ -23,13 +23,13 @@ BEGIN {
 
 =head1 SYNOPSIS
 
-use Test::More tests => 4;
-use Test::Exit;
-
-exits_ok { exit 1; } "exiting exits"
-never_exits_ok { print "Hi!"; } "not exiting doesn't exit"
-exits_zero { exit 0; } "exited with success"
-exits_nonzero { exit 42; } "exited with failure"
+    use Test::More tests => 4;
+    use Test::Exit;
+    
+    exits_ok { exit 1; } "exiting exits"
+    never_exits_ok { print "Hi!"; } "not exiting doesn't exit"
+    exits_zero { exit 0; } "exited with success"
+    exits_nonzero { exit 42; } "exited with failure"
 
 =head1 DESCRIPTION
 
