@@ -12,12 +12,18 @@ our @EXPORT = qw(exits_ok exits_zero exits_nonzero never_exits_ok);
 
 # We have to install this at compile-time and globally.
 # We provide one that does effectively nothing, and then override it locally.
-# Of course, if anyone else overrides CORE::GLOBAL::exit as well, bad stuff happens.
-our $exit_handler = sub { 
+our $exit_handler = sub {
   my $value = @_ ? $_[0] : 0;
   CORE::exit $value;
 };
-BEGIN {
+BEGIN { *CORE::GLOBAL::exit = \&CORE::exit };
+
+# someone else might have set up an exit handler inside some other BEGIN block.
+# We just do ours in a CHECK block, which increases the likelihood that ours is
+# the installed exit handler. (Note that we use CHECK rather than INIT since CHECK
+# runs in FILO order, whereas INIT runs in FIFO order.)
+CHECK {
+	no warnings 'redefine';
   *CORE::GLOBAL::exit = sub { $exit_handler->(@_) };
 }
 
