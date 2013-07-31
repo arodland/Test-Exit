@@ -18,7 +18,7 @@ our $exit_handler = sub {
   CORE::exit $value;
 };
 BEGIN {
-  *CORE::GLOBAL::exit = sub { $exit_handler->(@_) };
+  *CORE::GLOBAL::exit = sub (;$) { $exit_handler->(@_) };
 }
 
 =head1 SYNOPSIS
