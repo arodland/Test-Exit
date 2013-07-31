@@ -5,7 +5,7 @@ package Test::Exit;
 use strict;
 use warnings;
 
-use Test::Exit::Exception;
+use Return::MultiLevel qw(with_return);
 use base 'Test::Builder::Module';
 
 our @EXPORT = qw(exits_ok exits_zero exits_nonzero never_exits_ok);
@@ -13,7 +13,7 @@ our @EXPORT = qw(exits_ok exits_zero exits_nonzero never_exits_ok);
 # We have to install this at compile-time and globally.
 # We provide one that does effectively nothing, and then override it locally.
 # Of course, if anyone else overrides CORE::GLOBAL::exit as well, bad stuff happens.
-our $exit_handler = sub { 
+our $exit_handler = sub {
   CORE::exit $_[0];
 };
 BEGIN {
@@ -49,23 +49,11 @@ purpose of these tests.
 sub _try_run {
   my ($code) = @_;
 
-  eval {
-    local $exit_handler = sub { 
-      die Test::Exit::Exception->new($_[0]);
-    };
+  return with_return {
+    local $exit_handler = $_[0];
     $code->();
+    undef
   };
-  my $died = $@;
-
-  if (!defined $died || $died eq "") {
-    return undef;
-  }
-
-  unless (ref $died && $died->isa('Test::Exit::Exception')) {
-    die $died;
-  }
-
-  return $died->exit_value;
 }
 
 =item B<exits_ok>
