@@ -14,11 +14,10 @@ our @EXPORT = qw(exits_ok exits_zero exits_nonzero never_exits_ok);
 # We provide one that does effectively nothing, and then override it locally.
 # Of course, if anyone else overrides CORE::GLOBAL::exit as well, bad stuff happens.
 our $exit_handler = sub { 
-  my $value = @_ ? $_[0] : 0;
-  CORE::exit $value;
+  CORE::exit $_[0];
 };
 BEGIN {
-  *CORE::GLOBAL::exit = sub (;$) { $exit_handler->(@_) };
+  *CORE::GLOBAL::exit = sub (;$) { $exit_handler->(@_ ? $_[0] : 0) };
 }
 
 =head1 SYNOPSIS
@@ -52,8 +51,7 @@ sub _try_run {
 
   eval {
     local $exit_handler = sub { 
-      my $value = @_ ? $_[0] : 0;
-      die Test::Exit::Exception->new($value) 
+      die Test::Exit::Exception->new($_[0]);
     };
     $code->();
   };
