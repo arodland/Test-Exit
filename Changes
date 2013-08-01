@@ -1,5 +1,9 @@
 Changes for Test::Exit
 
+0.10 2013-07-31
+  * Use Return::MultiLevel's uplevel return instead of exceptions for
+    exit. Now works even if the tested code uses eval.
+
 0.03 2009-12-04
   * Handle "exit;" properly -- it should behave like exit(0).
     Thanks to KATO Kazuyoshi (kzys).
