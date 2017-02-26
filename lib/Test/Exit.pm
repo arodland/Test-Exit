@@ -1,6 +1,8 @@
 package Test::Exit;
 
 # ABSTRACT: Test that some code calls exit() without terminating testing
+# VERSION
+# AUTHORITY
 
 use strict;
 use warnings;
