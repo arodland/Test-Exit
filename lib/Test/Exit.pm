@@ -8,7 +8,7 @@ use warnings;
 use Return::MultiLevel qw(with_return);
 use base 'Test::Builder::Module';
 
-our @EXPORT = qw(exits_ok exits_zero exits_nonzero never_exits_ok);
+our @EXPORT = qw(exit_code exits_ok exits_zero exits_nonzero never_exits_ok);
 
 # We have to install this at compile-time and globally.
 # We provide one that does effectively nothing, and then override it locally.
@@ -42,11 +42,19 @@ C<exit()>. If the code throws an exception, the exception will be propagated
 and you will have to call it yourself. C<die()>ing is not exiting for the
 purpose of these tests.
 
-=over 4
+=head1 FUNCTIONS
+
+=head2 exit_code
+
+Runs the given code. If the code calls C<exit()>, then C<exit_code> will
+return a number, which is the status that C<exit()> would have exited with.
+If the code never calls C<exit()>, returns C<undef>. This is the
+L<Test::Fatal>-like interface. All of the other functions are wrappers for
+this one, retained for legacy purposes.
 
 =cut
 
-sub _try_run {
+sub exit_code(&) {
   my ($code) = @_;
 
   return with_return {
@@ -56,7 +64,7 @@ sub _try_run {
   };
 }
 
-=item B<exits_ok>
+=head2 exits_ok
 
 Tests that the supplied code calls C<exit()> at some point.
 
@@ -65,10 +73,10 @@ Tests that the supplied code calls C<exit()> at some point.
 sub exits_ok (&;$) {
   my ($code, $description) = @_;
 
-  __PACKAGE__->builder->ok(defined _try_run($code), $description);
+  __PACKAGE__->builder->ok(defined &exit_code($code), $description);
 }
 
-=item B<exits_nonzero>
+=head2 exits_nonzero
 
 Tests that the supplied code calls C<exit()> with a nonzero value.
 
@@ -77,10 +85,10 @@ Tests that the supplied code calls C<exit()> with a nonzero value.
 sub exits_nonzero (&;$) {
   my ($code, $description) = @_;
 
-  __PACKAGE__->builder->ok(_try_run($code), $description);
+  __PACKAGE__->builder->ok(&exit_code($code), $description);
 }
 
-=item B<exits_zero>
+=head2 exits_zero
 
 Tests that the supplied code calls C<exit()> with a zero (successful) value.
 
@@ -89,11 +97,11 @@ Tests that the supplied code calls C<exit()> with a zero (successful) value.
 sub exits_zero (&;$) {
   my ($code, $description) = @_;
   
-  my $exit = _try_run($code);
+  my $exit = &exit_code($code);
   __PACKAGE__->builder->ok(defined $exit && $exit == 0, $description);
 }
 
-=item B<never_exits_ok>
+=head2 never_exits_ok
 
 Tests that the supplied code completes without calling C<exit()>.
 
@@ -102,11 +110,7 @@ Tests that the supplied code completes without calling C<exit()>.
 sub never_exits_ok (&;$) {
   my ($code, $description) = @_;
 
-  __PACKAGE__->builder->ok(!defined _try_run($code), $description);
+  __PACKAGE__->builder->ok(!defined &exit_code($code), $description);
 }
-
-=back
-
-=cut
 
 1;
